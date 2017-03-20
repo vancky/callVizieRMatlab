@@ -17,6 +17,7 @@ classdef queryVizieR
         data
         originSrc
         source
+        hostname
     end
     
     methods % constructor methods
@@ -33,6 +34,8 @@ classdef queryVizieR
             self.url            = nan;
             self.data           = nan;
             self.source         = nan;
+          %  self.hostname='http://vizier.u-strasbg.fr/';
+            self.hostname='http://vizier.cfa.harvard.edu/';
         end
     end
     properties (Dependent)
@@ -116,7 +119,7 @@ classdef queryVizieR
             %         disp(t.fields)
             %         summary(t.data)
             self.source='I/329/urat1';
-            tmpurl=strcat('http://vizier.u-strasbg.fr/viz-bin/asu-txt?',...
+            tmpurl=strcat(self.hostname,'viz-bin/asu-txt?',...
                 '-source=',self.source,sprintf('&-c.ra=%f&-c.dec=%f',self.center.ra,self.center.dec),...
                 sprintf('&-c.bm=%f/%f',self.box.x,self.box.y));
             self.url=tmpurl;
@@ -169,7 +172,7 @@ classdef queryVizieR
             %         disp(t.fields)
             %         summary(t.data)
             self.source='I/337/gaia';
-            tmpurl=strcat('http://vizier.u-strasbg.fr/viz-bin/asu-txt?',...
+            tmpurl=strcat(self.hostname,'viz-bin/asu-txt?',...
                 '-source=',self.source,sprintf('&-c.ra=%f&-c.dec=%f',self.center.ra,self.center.dec),...
                 sprintf('&-c.bm=%f/%f',self.box.x,self.box.y));
             self.url=tmpurl;
@@ -217,7 +220,7 @@ classdef queryVizieR
             %         disp(t.fields)
             %         summary(t.data)
             self.source='I/317/sample';
-            tmpurl=strcat('http://vizier.u-strasbg.fr/viz-bin/asu-txt?',...
+            tmpurl=strcat(self.hostname,'viz-bin/asu-txt?',...
                 '-source=',self.source,sprintf('&-c.ra=%f&-c.dec=%f',self.center.ra,self.center.dec),...
                 sprintf('&-c.bm=%f/%f',self.box.x,self.box.y));
             self.url=tmpurl;
