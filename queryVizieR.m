@@ -34,8 +34,8 @@ classdef queryVizieR
             self.url            = nan;
             self.data           = nan;
             self.source         = nan;
-          %  self.hostname='http://vizier.u-strasbg.fr/';
-            self.hostname='http://vizier.cfa.harvard.edu/';
+            self.hostname='http://vizier.u-strasbg.fr/';
+          %  self.hostname='http://vizier.cfa.harvard.edu/';
         end
     end
     properties (Dependent)
