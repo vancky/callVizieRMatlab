@@ -1,7 +1,7 @@
-classdef queryTest < matlab.unittest.TestCase    
+classdef queryVizieRTest < matlab.unittest.TestCase    
     % test for queryVizieR 
     % do it by 
-    %  >> runtests('queryTest')
+    %  >> runtests('queryVizieRTest')
     properties (TestParameter)
     end
     methods (Test)
