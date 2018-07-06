@@ -124,7 +124,9 @@ classdef queryVizieR
                 sprintf('&-c.bm=%f/%f',self.box.x,self.box.y));
             self.url=tmpurl;
             %   disp(self.url);
-            src=webread(self.url);
+             woption=weboptions('UserAgent','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.62 Safari/537.36',...
+                'Timeout',30,'RequestMethod','get');
+            src=webread(self.url,woption);
             self.originSrc=src;
             fieldnames={'URAT1','RA','DE','Ep',...
                 'fmag','e_fmag','pmRA','pmDE','Jmag','Hmag','Kmag','Bmag','Vmag','gmag',...
@@ -177,7 +179,9 @@ classdef queryVizieR
                 sprintf('&-c.bm=%f/%f',self.box.x,self.box.y));
             self.url=tmpurl;
             %   disp(self.url);
-            src=webread(self.url);
+              woption=weboptions('UserAgent','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.62 Safari/537.36',...
+                'Timeout',30,'RequestMethod','get');
+            src=webread(self.url,woption);
             self.originSrc=src;
             fieldnames={'RA','e_RA','DE','e_DE',...
                 'GAIA_ID','parallax','pmRA','pmDE','RADEcor','Dup','GF','e_GF','Gmag','Var'};
@@ -225,7 +229,9 @@ classdef queryVizieR
                 sprintf('&-c.bm=%f/%f',self.box.x,self.box.y));
             self.url=tmpurl;
             %   disp(self.url);
-            src=webread(self.url);
+             woption=weboptions('UserAgent','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.62 Safari/537.36',...
+                'Timeout',30,'RequestMethod','get');
+            src=webread(self.url,woption);
             self.originSrc=src;
             fieldnames={'RA','DE','pmRA','pmDE','Jmag','Kmag','b1mag','b2mag',...
                 'r1mag','r2mag','imag','No','f1'};
@@ -259,6 +265,54 @@ classdef queryVizieR
             self.data.Properties.VariableUnits{10} = 'mag';self.data.Properties.VariableDescriptions{10}='R mag from USNO-B, second epoch ';
             self.data.Properties.VariableUnits{11} = 'mag';self.data.Properties.VariableDescriptions{11}='Number of observations used';
             self.data.Properties.VariableDescriptions{12}='Flags';
+        end
+         function self=get_gaiadr2(self)
+            % A easist mode query gaia dr2 online
+            % example url is
+            % http://vizier.u-strasbg.fr/viz-bin/asu-txt?-source=I/337/gaia&-c.ra=10.6847&-c.dec=41.2687&-c.bm=4/2
+            %  example:
+            %         t=queryVizieR(10.684708,41.232,2,4);
+            %         t=t.get_gaiadr2();
+            %         disp(t.fields)
+            %         summary(t.data)
+            self.source='I/345/gaia2';
+            tmpurl=strcat(self.hostname,'viz-bin/asu-txt?',...
+                '-source=',self.source,sprintf('&-c.ra=%f&-c.dec=%f',self.center.ra,self.center.dec),...
+                sprintf('&-c.bm=%f/%f',self.box.x,self.box.y));
+            self.url=tmpurl;
+            %   disp(self.url);
+             woption=weboptions('UserAgent','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.62 Safari/537.36',...
+                'Timeout',30,'RequestMethod','get');
+            src=webread(self.url,woption);
+            self.originSrc=src;
+            fieldnames={'RA','eRA','DE','eDE','Source','Plx','ePlx','pmRA','epmRA','pmDE','epmDE','Gmag','eGmag'};
+            pos1=regexp(src,'---------\n\d','ONCE','end');
+            pos2=regexp(src,'\n#END#','ONCE','start');
+            % from uiimport
+            % read fixed width text
+            formatSpec = '%16s%8s%16s%8s%20s%11s%8s%10s%7s%10s%7s%2s%12s%12s%8s%7s%12s%12s%8s%7s%12s%12s%8s%7s%8s%8s%6s%8s%8s%8s%7s%[^\n\r]';
+            try
+                C= textscan(src(pos1:pos2),formatSpec, 'Delimiter', '', 'WhiteSpace', '',  'ReturnOnError', false);
+            catch
+                error('check source file %s\n',src);
+            end
+            for k=[1,2,3,4,5,6,7,8,9,10,11,15,16]
+                C{k}=cell2mat(cellfun(@str2double,C{k},'UniformOutput', false));
+            end
+            self.data=table(C{[1,2,3,4,5,6,7,8,9,10,11,15,16]},'VariableNames',fieldnames);
+            self.data.Properties.VariableUnits{1} = 'deg';self.data.Properties.VariableDescriptions{1} = 'Right ascension (ICRS) at epoch 2015.0';
+            self.data.Properties.VariableUnits{2} = 'mas';self.data.Properties.VariableDescriptions{2}='Standard error of right ascension';
+            self.data.Properties.VariableUnits{3} = 'deg';self.data.Properties.VariableDescriptions{3}='Declination (ICRS) at epoch 2015.0';
+            self.data.Properties.VariableUnits{4} = 'mas';self.data.Properties.VariableDescriptions{4}='Standard error of declination ';
+            self.data.Properties.VariableDescriptions{5}=' Unique source identifier';
+            self.data.Properties.VariableUnits{6} = 'mas';self.data.Properties.VariableDescriptions{6}='Absolute barycentric stellar parallax of the source at the reference epoch Epoch';
+            self.data.Properties.VariableUnits{7} = 'mas';self.data.Properties.VariableDescriptions{7}='Standard error of parallax';
+            self.data.Properties.VariableUnits{8} = 'mas/yr';self.data.Properties.VariableDescriptions{8}='Proper motion in right ascension direction';
+             self.data.Properties.VariableUnits{9} = 'mas/yr';self.data.Properties.VariableDescriptions{9}='Standard error of proper motion in right ascension direction';
+              self.data.Properties.VariableUnits{10} = 'mas/yr';self.data.Properties.VariableDescriptions{10}='Proper motion in declination direction';
+            self.data.Properties.VariableUnits{11} = 'mas/yr';self.data.Properties.VariableDescriptions{11}='Standard error of proper motion in declination direction  ';
+            self.data.Properties.VariableUnits{12} = 'mag';self.data.Properties.VariableDescriptions{12}='G-band mean magnitude';
+             self.data.Properties.VariableUnits{13} = 'mag';self.data.Properties.VariableDescriptions{13}='Standard error of G-band mean magnitude';
         end
     end
     
